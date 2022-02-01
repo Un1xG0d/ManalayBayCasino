@@ -1,3 +1,5 @@
+import { getUserAccount } from "@decentraland/EthereumController"
+import { matic } from "@dcl/l2-scene-utils"
 import * as ui from "@dcl/ui-scene-utils"
 
 const _scene = new Entity("_scene")
@@ -39,8 +41,19 @@ engine.addEntity(slotMachineDisplay)
 const winAudio = new AudioSource(new AudioClip("sounds/coins.mp3"))
 slotMachineDisplay.addComponent(winAudio)
 
+let apiUrl = "http://localhost:3000"
+let ownerWallet = "0xF8B3cfe70412F2D91F2DCe488377Bb03B9E249E2"
 let totalGames = 0
 let totalPayout = 0
+let userAddress = ""
+
+executeTask(async () => {
+  try {
+    userAddress = await getUserAccount()
+  } catch (error) {
+    log(error.toString())
+  }
+})
 
 setupScene()
 
@@ -84,7 +97,7 @@ function addSlotMachines() {
   slotMachines.addComponentOrReplace(gltfShape2)
   slotMachines.addComponent(
     new OnPointerDown((e) => {
-      spin()
+      pay()
     },
     {
       button: ActionButton.PRIMARY,
@@ -112,9 +125,16 @@ function determinePayout(results) {
 }
 
 function getRandomInt(min, max) : number {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min; 
+  min = Math.ceil(min)
+  max = Math.floor(max)
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+async function pay() {
+  slotMachineDisplay.getComponent(TextShape).value = "Verifying tx..."
+  await matic.sendMana(ownerWallet, 1).then(() => {
+    spin()
+  })
 }
 
 function setupScene() {
@@ -137,8 +157,16 @@ function spin() {
   if (payout > 0) {
     payoutTextColor = Color4.Green()
     winAudio.playOnce()
+    fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ "winnings": 2, "winner": userAddress })
+    })
   }
-  let payoutAnnouncement = ui.displayAnnouncement("Winnings: " + payout.toString() + " MANA", 3, payoutTextColor, 30)
+  let payoutAnnouncement = ui.displayAnnouncement("Winnings: " + payout.toString() + " MANA", 4, payoutTextColor, 30)
   totalGames += 1
   totalPayout += payout
   slotMachineDisplay.getComponent(TextShape).value = results["reel1"] + " | " + results["reel2"] + " | " + results["reel3"]
