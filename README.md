@@ -12,7 +12,7 @@ nodemon server.js
 ```
 cd scene/
 npm install
-dcl start
+dcl start --web3
 ```
 
 ## PAR sheet
