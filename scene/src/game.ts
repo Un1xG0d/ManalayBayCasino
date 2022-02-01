@@ -42,7 +42,7 @@ const winAudio = new AudioSource(new AudioClip("sounds/coins.mp3"))
 slotMachineDisplay.addComponent(winAudio)
 
 let apiUrl = "http://localhost:3000"
-let ownerWallet = "0xF8B3cfe70412F2D91F2DCe488377Bb03B9E249E2"
+let ownerWallet = "0x9b0031aA38431B05DdFBfb6DaFb278aD7b88Ca13"
 let totalGames = 0
 let totalPayout = 0
 let userAddress = ""
