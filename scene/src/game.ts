@@ -161,9 +161,10 @@ function spin() {
       method: "POST",
       headers: {
         "Accept": "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": ""
       },
-      body: JSON.stringify({ "winnings": 2, "winner": userAddress })
+      body: JSON.stringify({ "winnings": payout, "winner": userAddress })
     })
   }
   let payoutAnnouncement = ui.displayAnnouncement("Winnings: " + payout.toString() + " MANA", 4, payoutTextColor, 30)

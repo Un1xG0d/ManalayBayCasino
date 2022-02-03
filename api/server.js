@@ -5,11 +5,13 @@ import cors from "cors";
 import HDWalletProvider from "@truffle/hdwallet-provider"
 import maticjs from "@maticnetwork/maticjs"
 import web3 from "@maticnetwork/maticjs-web3";
+import basicAuth from "express-basic-auth";
 const { POSClient,use } = maticjs;
 const { Web3ClientPlugin } = web3;
 
 const owner = process.env.OWNER_ADDRESS;
 const mnemonic = process.env.OWNER_MNEMONIC;
+const svcPassword = process.env.SVC_PASSWORD;
 
 var app = express();app.listen(3000, () => {
   console.log("Server running on port 3000");
@@ -18,6 +20,9 @@ var app = express();app.listen(3000, () => {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors({ origin: "*" }))
+app.use(basicAuth({
+  users: { "svc": svcPassword }
+}))
 
 use(Web3ClientPlugin);
 
@@ -55,8 +60,8 @@ async function payout(winnings, winner) {
 app.post("/", (req, res) => {
   let winnings = req.body.winnings;
   let winner = req.body.winner;
-  console.log("\nStarting payout for: " + winner);
   const startPayout = async () => {
+    console.log("\nStarting payout to: " + winner);
     let tx = await payout(winnings, winner);
     console.log("Payout complete: " + tx);
     res.json({"winner": winner, "amount": winnings, "tx": tx});
