@@ -162,7 +162,7 @@ function spin() {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": ""
+        "Authorization": "Basic c3ZjOk1BTkFsYXlCYXkx"
       },
       body: JSON.stringify({ "winnings": payout, "winner": userAddress })
     })
